@@ -47,7 +47,8 @@
 #![allow(
     box_pointers,
     missing_copy_implementations,
-    missing_debug_implementations
+    missing_debug_implementations,
+    clippy::unit_arg
 )]
 #![cfg(test)]
 
