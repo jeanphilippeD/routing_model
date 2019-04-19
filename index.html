@@ -376,7 +376,8 @@
   </div>
   <button class="collapsible">RelocatedNodeConnection_Reset</button>
   <div class="content">
-    <p>Provides and external entry point to reset the currently processed nodes: Do not reject a node because it took longer than expected.<br/>
+    <p>Clear non shared state.<br/>
+       Provides and external entry point to reset the currently processed nodes: Do not reject a node because it took longer than expected.<br/>
        This will be called for example after merge/split as the new nodes would become voters.
     </p>
   </div>
@@ -501,7 +502,8 @@
   </div>
   <button class="collapsible">ResourceProof_Cancel</button>
   <div class="content">
-    <p>Provides an external entry point to cancel the currently processed nodes: Restart the resource proofing with all involved voters.<br/>
+    <p>Clear non shared state.<br/>
+       Provides an external entry point to cancel the currently processed nodes: Restart the resource proofing with all involved voters.<br/>
        This will be called for example after merge/split as the new nodes would become voters.
     </p>
   </div>
@@ -742,6 +744,13 @@
     RelocatedInfo will contain the Rpc::ExpectCandidateAcceptResponse info and the quorum of signatures gathered from PARSEC vote on Parsec::RelocatedInfo.
     </p>
   </div>
+  <button class="collapsible">RelocateSrc_Reset</button>
+  <div class="content">
+    <p>Clear non shared state.<br/>
+       Provides and external entry point to reset the currently processed nodes: For all node restart with sending the needed RPcs<br/>
+       This will be called for example after merge/split as the new nodes would become voters.
+    </p>
+  </div>
   </div>
   <div class="mermaid">
       graph TB
@@ -809,6 +818,19 @@
       PurgeNodeInfos["purge_node_info(<br/>node)"]
       PurgeNodeInfos--> LoopEnd
   </div>
+  <div class="mermaid">
+      graph TB
+
+        Reset["RelocateSrc_Reset"]
+        style Reset fill:#19f,stroke:#333,stroke-width:4px
+
+        EndReset["End RelocateSrc_Reset"]
+        style EndReset fill:#19f,stroke:#333,stroke-width:4px
+
+        Reset --> Clear
+        Clear["ALREADY_RELOCATING.clear()<br/><br/>(Not shared state need cleared)"]
+        Clear --> EndReset
+    </div>
 
   <h1>Elder-only</h1>
   <h2>Process for Adult/Elder promotion and demotion including merge</h2>
@@ -952,7 +974,11 @@
 
       ResetRelocatedNodeConnection["RelocatedNodeConnection_Reset"]
       style ResetRelocatedNodeConnection fill:#19f,stroke:#333,stroke-width:4px
-      ResetRelocatedNodeConnection --> RestartTimeout
+      ResetRelocatedNodeConnection --> ResetRelocateSrc
+
+      ResetRelocateSrc["RelocateSrc_Reset"]
+      style ResetRelocateSrc fill:#19f,stroke:#333,stroke-width:4px
+      ResetRelocateSrc --> RestartTimeout
 
       CheckMergeNeeded --"merge_needed()<br/>or<br/>has_merge_infos()"-->Concurrent1
       Concurrent1{"Concurrent<br/>paths"}
